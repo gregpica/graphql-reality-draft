@@ -5,14 +5,26 @@ const {
     GraphQLObjectType,
     GraphQLID, 
     GraphQLString,
-    GraphQLSchema
+    GraphQLSchema,
+    GraphQLList 
 } = graphql;
 
 const ShowType = new GraphQLObjectType({
     name: 'Show',
     fields: () => ({
         id: {type: GraphQLID},
-        name: {type: GraphQLString}
+        name: {type: GraphQLString},
+        characters: {
+            type: new GraphQLList(CharacterType), 
+            resolve(parent, args) {
+                const showCharactersQuery = `SELECT * FROM "characters" WHERE "showId"=${parent.id}`;
+                return db.manyOrNone(showCharactersQuery)
+                    .then(data => {
+                        return data;
+                    })
+            }
+        }
+
     })
 })
 
@@ -21,9 +33,49 @@ const DrafterType = new GraphQLObjectType({
     fields: () => ({
         id: {type: GraphQLID},
         name: {type: GraphQLString},
-        image: {type: GraphQLString}
+        image: {type: GraphQLString},
+        characters: {
+            type: new GraphQLList(CharacterType),
+            resolve(parent, args) {
+                const drafterCharactersQuery = `SELECT * FROM "characters" WHERE "drafterId"=${parent.id}`;
+                return db.manyOrNone(drafterCharactersQuery)
+                    .then(data => {
+                        return data;
+                    })
+            }
+        }
     })
 })
+
+const CharacterType = new GraphQLObjectType({
+    name: 'Character',
+    fields: () => ({
+        id: {type: GraphQLID},
+        name: {type: GraphQLString},
+        image: {type: GraphQLString},
+        show: {
+            type: ShowType,
+            resolve(parent, args) {
+                const characterShowQuery = `SELECT * FROM "shows" WHERE id=${parent.showId}`;
+                return db.one(characterShowQuery)
+                    .then(data => {
+                        return data;
+                })            
+            }
+        },
+        drafter: {
+            type: DrafterType,
+            resolve(parent, args) {
+                const drafterShowQuery = `SELECT * FROM "drafters" WHERE id=${parent.drafterId}`;
+                return db.one(drafterShowQuery)
+                    .then(data => {
+                        return data;
+                })            
+            }
+        }
+    })
+})
+
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
