@@ -6,7 +6,7 @@ exports.seed = function(knex, Promise) {
       // Inserts seed entries
       return knex('shows').insert([
         {id: 1, name: 'The Bachelor: Season 23'},
-        {id: 2, name: 'MasterChef Junior: Season 7'}
+        {id: 2, name: 'MasterChef Junior: Season 6'}
       ]);
     });
 };
