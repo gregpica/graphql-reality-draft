@@ -6,7 +6,8 @@ const {
     GraphQLID, 
     GraphQLString,
     GraphQLSchema,
-    GraphQLList 
+    GraphQLList,
+    GraphQLInt
 } = graphql;
 
 const ShowType = new GraphQLObjectType({
@@ -36,8 +37,14 @@ const DrafterType = new GraphQLObjectType({
         image: {type: GraphQLString},
         characters: {
             type: new GraphQLList(CharacterType),
+            //Optionally return drafter's characters for a specific show
+            args: {showId: {type: GraphQLID}},
             resolve(parent, args) {
-                const drafterCharactersQuery = `SELECT * FROM "characters" WHERE "drafterId"=${parent.id}`;
+                let drafterCharactersQuery = `SELECT * FROM "characters" WHERE "drafterId"=${parent.id}`;
+
+                if(args.showId) {
+                    drafterCharactersQuery += ` AND "showId"=${args.showId}`;
+                } 
                 return db.manyOrNone(drafterCharactersQuery)
                     .then(data => {
                         return data;
@@ -72,7 +79,40 @@ const CharacterType = new GraphQLObjectType({
                         return data;
                 })            
             }
+        },
+        episodeScores: {
+            type: new GraphQLList(EpisodeScoreType),
+            resolve(parent, args) {
+                const drafterEpisodeScoresQuery = `SELECT * FROM "episode_scores" WHERE "characterId"=${parent.id}`;
+                return db.manyOrNone(drafterEpisodeScoresQuery)
+                    .then(data => {
+                        return data;
+                    })
+            }
+        },
+        totalPoints: {
+            type: GraphQLInt,
+            resolve(parent, args) {
+                const drafterEpisodeScoresQuery = `SELECT * FROM "episode_scores" WHERE "characterId"=${parent.id}`;
+                return db.manyOrNone(drafterEpisodeScoresQuery)
+                    .then(data => {
+                      let totalPoints= 0;
+                      data.forEach(epi => totalPoints += epi.points);
+                      return totalPoints;
+                    })
+
+            }
         }
+    })
+})
+
+const EpisodeScoreType = new GraphQLObjectType({
+    name: 'EpisodeScore',
+    fields: () => ({
+        id: {type: GraphQLID},
+        number: {type: GraphQLInt},
+        points: {type: GraphQLInt},
+
     })
 })
 
