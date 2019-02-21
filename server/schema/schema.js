@@ -145,6 +145,24 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addShow: {
+            type: ShowType,
+            args: {name: {type: GraphQLString}},
+            resolve(parent, args) {
+                const addShowQuery = `INSERT INTO shows(name) VALUES ('${args.name}') RETURNING id, name`;
+                return db.one(addShowQuery)
+                    .then(data => {
+                        return data
+                    })
+            }
+        }
+    }
+})
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation 
 });
