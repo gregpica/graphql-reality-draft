@@ -1,8 +1,13 @@
 const db = require('./psqlAdapter');
+const defaultImage = 'https://www.qualiscare.com/wp-content/uploads/2017/08/default-user.png';
 
 const typeDef = `
     extend type Query {
         drafter(id: ID!): Drafter
+    }
+
+    extend type Mutation {
+        addDrafter(name: String!, image: String = "${defaultImage}"): Drafter
     }
 
     type Drafter {
@@ -23,6 +28,15 @@ const resolvers = {
                 })    
         }
 
+    },
+    Mutation: {
+        addDrafter: (parent, args) => {
+            const addDrafterQuery = `INSERT INTO drafters(name, image) VALUES ('${args.name}', '${args.image}') RETURNING id, name, image`;
+            return db.one(addDrafterQuery)
+                .then(data => {
+                    return data 
+                })
+        }
     },
     Drafter: {
         characters: (parent, args) => {
