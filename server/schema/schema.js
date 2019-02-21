@@ -24,6 +24,16 @@ const ShowType = new GraphQLObjectType({
                         return data;
                     })
             }
+        },
+        rules: {
+            type: new GraphQLList(RuleType),
+            resolve(parent, args) {
+                const showRulesQuery = `SELECT * FROM "rules" WHERE "showId"=${parent.id}`;
+                return db.manyOrNone(showRulesQuery)
+                    .then(data => {
+                        return data;
+                    })
+            }
         }
 
     })
@@ -113,6 +123,15 @@ const EpisodeScoreType = new GraphQLObjectType({
         number: {type: GraphQLInt},
         points: {type: GraphQLInt},
 
+    })
+})
+
+const RuleType = new GraphQLObjectType({
+    name: 'Rule',
+    fields: () => ({
+        id: {type: GraphQLID},
+        name: {type: GraphQLString},
+        points: {type: GraphQLInt}
     })
 })
 
