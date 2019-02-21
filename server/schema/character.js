@@ -1,6 +1,11 @@
 const db = require('./psqlAdapter');
+const defaultImage = 'https://cdn2.vectorstock.com/i/1000x1000/75/21/silly-face-vector-467521.jpg'; 
 
 const typeDef = `
+    extend type Mutation {
+        addCharacter(showId: ID!, name: String!, image: String = "${defaultImage}"): Character
+    }
+
     type Character {
         id: ID!
         name: String!
@@ -13,6 +18,15 @@ const typeDef = `
 `;
 
 const resolvers = {
+    Mutation: {
+        addCharacter: (parent, args) => {
+            const addCharacterQuery = `INSERT INTO characters("showId", name, image) VALUES ('${args.showId}', '${args.name}', '${args.image}') RETURNING id, name, image`;
+            return db.one(addCharacterQuery)
+            .then(data => {
+                return data 
+            })    
+        }
+    },
     Character: {
         show: (parent) => {
             const characterShowQuery = `SELECT * FROM "shows" WHERE id=${parent.showId}`;
