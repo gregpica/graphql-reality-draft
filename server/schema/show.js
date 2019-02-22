@@ -8,6 +8,7 @@ const typeDef = `
     extend type Mutation {
         addShow(name: String!): Show
         editShowName(id: ID!, name: String!): Show
+        deleteShow(id: ID!): Show
     }
 
     type Show {
@@ -42,6 +43,13 @@ const resolvers = {
                 .then(data => {
                     return data
                 })           
+        },
+        deleteShow: (parent, args) => {
+            const deleteShowQuery = `DELETE FROM shows WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(deleteShowQuery)
+                .then(data => {
+                    return data
+                })    
         }
     },
     Show: {
