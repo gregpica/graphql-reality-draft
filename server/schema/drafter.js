@@ -7,7 +7,7 @@ const typeDef = `
     }
 
     extend type Mutation {
-        addDrafter(name: String!, image: String = "${defaultImage}"): Drafter
+        addDrafter(name: String!, image: String = "${defaultImage}", color: String!): Drafter
     }
 
     type Drafter {
@@ -31,7 +31,7 @@ const resolvers = {
     },
     Mutation: {
         addDrafter: (parent, args) => {
-            const addDrafterQuery = `INSERT INTO drafters(name, image) VALUES ('${args.name}', '${args.image}') RETURNING id, name, image`;
+            const addDrafterQuery = `INSERT INTO drafters(name, image, color) VALUES ('${args.name}', '${args.image}', '${args.color}') RETURNING *`;
             return db.one(addDrafterQuery)
                 .then(data => {
                     return data 
