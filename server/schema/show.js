@@ -7,6 +7,7 @@ const typeDef = `
 
     extend type Mutation {
         addShow(name: String!): Show
+        editShowName(id: ID!, name: String!): Show
     }
 
     type Show {
@@ -29,11 +30,18 @@ const resolvers = {
     },
     Mutation: {
         addShow: (parent, args) => {
-                const addShowQuery = `INSERT INTO shows(name) VALUES ('${args.name}') RETURNING id, name`;
-                return db.one(addShowQuery)
-                    .then(data => {
-                        return data
-                   })           
+            const addShowQuery = `INSERT INTO shows(name) VALUES ('${args.name}') RETURNING id, name`;
+            return db.one(addShowQuery)
+                .then(data => {
+                    return data
+                })           
+        },
+        editShowName: (parent, args) => {
+            const editShowNameQuery = `UPDATE shows SET "name" = '${args.name}' WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(editShowNameQuery)
+                .then(data => {
+                    return data
+                })           
         }
     },
     Show: {
