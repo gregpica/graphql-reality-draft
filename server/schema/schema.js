@@ -3,7 +3,7 @@ const { Show, showResolvers } = require('./show.js');
 const { Drafter, drafterResolvers } = require('./drafter.js');
 const { Character, characterResolvers } = require('./character.js');
 const { EpisodeScore } = require('./episodeScore.js');
-const { Rule } = require('./rule.js')
+const { Rule, ruleResolvers } = require('./rule.js')
 
 const Query = `
     type Query {
@@ -19,7 +19,7 @@ const Mutation = `
  
 module.exports = makeExecutableSchema({
     typeDefs: [Query, Mutation, Show, Drafter, Character, EpisodeScore, Rule],
-    resolvers: [showResolvers, drafterResolvers, characterResolvers]
+    resolvers: [showResolvers, drafterResolvers, characterResolvers, ruleResolvers]
 });
 
 
