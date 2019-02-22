@@ -8,12 +8,14 @@ const typeDef = `
 
     extend type Mutation {
         addDrafter(name: String!, image: String = "${defaultImage}", color: String!): Drafter
+        editDrafter(id: ID!, name: String!, image: String!, color: String!): Drafter
     }
 
     type Drafter {
         id: ID!
         name: String!
         image: String
+        color: String!
         characters(showId: ID = null): [Character!]!
     }
 `;
@@ -35,6 +37,13 @@ const resolvers = {
             return db.one(addDrafterQuery)
                 .then(data => {
                     return data 
+                })
+        },
+        editDrafter: (parent, args) => {
+            const editDrafterQuery = `UPDATE drafters SET "name" = '${args.name}', "image" = '${args.image}', "color" = '${args.color}' WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(editDrafterQuery)
+                .then(data => {
+                    return data
                 })
         }
     },
