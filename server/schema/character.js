@@ -4,6 +4,8 @@ const defaultImage = 'https://cdn2.vectorstock.com/i/1000x1000/75/21/silly-face-
 const typeDef = `
     extend type Mutation {
         addCharacter(showId: ID!, name: String!, image: String = "${defaultImage}"): Character
+        addCharacterDrafter(characterId: ID!, drafterId: ID!): Character
+        editCharacter(characterId: ID!, name: String!, image: String!, drafterId: ID!): Character
     }
 
     type Character {
@@ -22,9 +24,23 @@ const resolvers = {
         addCharacter: (parent, args) => {
             const addCharacterQuery = `INSERT INTO characters("showId", name, image) VALUES ('${args.showId}', '${args.name}', '${args.image}') RETURNING id, name, image`;
             return db.one(addCharacterQuery)
-            .then(data => {
-                return data 
-            })    
+                .then(data => {
+                    return data 
+                })    
+        },
+        addCharacterDrafter: (parent, args) => {
+            const addCharacterDrafterQuery = `UPDATE characters SET "drafterId" = ${args.drafterId} WHERE "id" = ${args.characterId} RETURNING *`;
+            return db.one(addCharacterDrafterQuery)
+                .then(data => {
+                    return data
+                })
+        },
+        editCharacter: (parent, args) => {
+            const editCharacterQuery = `UPDATE characters SET "name" = '${args.name}', "image" = '${args.image}', "drafterId" = '${args.drafterId}' WHERE "id" = ${args.characterId} RETURNING *`;
+            return db.one(editCharacterQuery)
+                .then(data => {
+                    return data
+                })
         }
     },
     Character: {
