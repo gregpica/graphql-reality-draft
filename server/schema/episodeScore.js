@@ -3,6 +3,7 @@ const db = require('./psqlAdapter');
 const typeDef = `
     extend type Mutation {
         addEpisodeScore(showId: ID!, characterId: ID!, number: Int!, points: Int!): EpisodeScore
+        editEpisodeScore(id: ID!, points: Int!): EpisodeScore
     }
 
     type EpisodeScore {
@@ -20,6 +21,13 @@ const resolvers = {
                 .then(data => {
                     return data 
                 })
+        },
+        editEpisodeScore: (parent, args) => {
+            const editEpisodeScoreQuery = `UPDATE episode_scores SET "points" = '${args.points}' WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(editEpisodeScoreQuery)
+                .then(data => {
+                    return data 
+                })   
         }
     }
 };
