@@ -6,6 +6,7 @@ const typeDef = `
         addCharacter(showId: ID!, name: String!, image: String = "${defaultImage}"): Character
         addCharacterDrafter(characterId: ID!, drafterId: ID!): Character
         editCharacter(characterId: ID!, name: String!, image: String!, drafterId: ID!): Character
+        deleteCharacter(id: ID!): Character
     }
 
     type Character {
@@ -41,6 +42,13 @@ const resolvers = {
                 .then(data => {
                     return data
                 })
+        },
+        deleteCharacter: (parent, args) => {
+            const deleteCharacterQuery = `DELETE FROM characters WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(deleteCharacterQuery)
+                .then(data => {
+                    return data
+                })            
         }
     },
     Character: {
