@@ -4,6 +4,7 @@ const typeDef = `
     extend type Mutation {
         addRule(showId: ID!, name: String!, points: Int!): Rule
         editRule(id: ID!, name: String!, points: Int!): Rule
+        deleteRule(id: ID!): Rule 
     }
 
     type Rule {
@@ -27,6 +28,13 @@ const resolvers = {
             return db.one(editRuleQuery)
                 .then(data => {
                     return data 
+                })
+        },
+        deleteRule: (parent, args) => {
+            const deleteRuleQuery = `DELETE FROM rules WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(deleteRuleQuery)
+                .then(data => {
+                    return data
                 })
         }
     }

@@ -4,6 +4,7 @@ const typeDef = `
     extend type Mutation {
         addEpisodeScore(showId: ID!, characterId: ID!, number: Int!, points: Int!): EpisodeScore
         editEpisodeScore(id: ID!, points: Int!): EpisodeScore
+        deleteEpisodeScore(id: ID!): EpisodeScore 
     }
 
     type EpisodeScore {
@@ -28,7 +29,14 @@ const resolvers = {
                 .then(data => {
                     return data 
                 })   
-        }
+        },
+        deleteEpisodeScore: (parent, args) => {
+            const deleteEpisodeScoreQuery = `DELETE FROM episode_scores WHERE "id" = ${args.id} RETURNING *`;
+            return db.one(deleteEpisodeScoreQuery)
+                .then(data => {
+                    return data
+                })
+        }       
     }
 };
 
