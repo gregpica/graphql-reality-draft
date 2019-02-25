@@ -3,6 +3,7 @@ const db = require('./psqlAdapter');
 const typeDef = `
     extend type Query {
         show(id: ID!): Show
+        shows: [Show!]!
     }
 
     extend type Mutation {
@@ -27,6 +28,13 @@ const resolvers = {
                 .then(data => {
                     return data;
                 })     
+        },
+        shows: (parent, args) => {
+            const showsQuery = `SELECT * FROM "shows"`;
+            return db.manyOrNone(showsQuery)
+                .then(data => {
+                    return data;
+                })
         }
     },
     Mutation: {
