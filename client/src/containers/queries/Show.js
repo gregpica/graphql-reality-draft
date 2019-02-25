@@ -18,4 +18,13 @@ const getShowQuery = gql`
     }
 `;
 
-export { getShowsQuery, getShowQuery };
+const addShowMutation = gql`
+    mutation($name: String!) {
+        addShow(name: $name) {
+            id 
+            name 
+        }
+    }
+`;
+
+export { getShowsQuery, getShowQuery, addShowMutation };
