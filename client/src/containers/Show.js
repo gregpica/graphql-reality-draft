@@ -3,6 +3,7 @@ import { graphql, compose } from 'react-apollo';
 import { getShowsQuery, addShowMutation } from './queries/Show';
 import styled from 'styled-components';
 import SelectedShow from './SelectedShow';
+import NewShowCharacters from './NewShowCharacters';
 
 const Wrapper = styled.div`
     display: flex;
@@ -54,7 +55,8 @@ class Show extends Component {
         this.state = {
             selectedShow: "",
             addingShow: false,
-            newShow: null 
+            newShow: null,
+            newShowSaved: null
         }
     }
 
@@ -85,7 +87,7 @@ class Show extends Component {
     }
 
     handleAddClick = () => {
-        this.setState({addingShow: true});
+        this.setState({addingShow: true, selectedShow: ""});
     }
 
     handleCancelClick = () => {
@@ -97,11 +99,14 @@ class Show extends Component {
             variables: {
                 name: this.state.newShow
             }
-        })
+        }).then(res => {
+            const data = res.data.addShow;
+            this.setState({addingShow: false, newShowSaved: {id: data.id, name: data.name}});
+        });
     }
 
     getSelectOrAddDisplay = () => {
-        const { addingShow } = this.state;
+        const { addingShow, newShowSaved } = this.state;
         if (addingShow) {
             return (
                 <>
@@ -111,6 +116,11 @@ class Show extends Component {
                 </>
             )
         }
+
+         if(newShowSaved) {
+             return <NewShowCharacters showId={newShowSaved.id} showName={newShowSaved.name} />
+         }
+
         return (
             <>
                 <SelectBox value={this.state.selectedShow} onChange={this.setSelectedShow}>
