@@ -6,6 +6,10 @@ import { getShowQuery } from './queries/Show';
 const Wrapper = styled.div`
 `;
 
+const Delete = styled.h5`
+  color: red;
+  cursor: pointer;
+`;
 
 class SelectedShow extends Component {
     getShowDetails = () => {
@@ -21,6 +25,7 @@ class SelectedShow extends Component {
         return (
             <Wrapper>
                 {this.getShowDetails()}
+                <Delete onClick={() => this.props.handleDeleteShow(this.props.showId)}>Delete Show</Delete>
             </Wrapper>
         );
     }

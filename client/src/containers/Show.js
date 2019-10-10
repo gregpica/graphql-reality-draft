@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
-import { getShowsQuery, addShowMutation } from './queries/Show';
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import { getShowsQuery, addShowMutation, deleteShowMutation } from './queries/Show';
 import styled from 'styled-components';
 import SelectedShow from './SelectedShow';
 import NewShowCharacters from './NewShowCharacters';
@@ -23,7 +25,6 @@ const SelectBox = styled.select`
     width: 300px;
     font-size: 16px;
     margin-right: 20px;
-
 `;
 
 const AddTextBox = styled.input`
@@ -78,20 +79,49 @@ class Show extends Component {
     getSelectedShow = () => {
         const { selectedShow } = this.state;
         if (selectedShow) {
-            return <SelectedShow showId={selectedShow} />
+            return <SelectedShow 
+              showId={selectedShow}
+              handleDeleteShow={showId => this.handleDeleteShow(showId)}
+            />
         }
     }
 
-    handleNewShowChange = ({ target: { value }}) => {
-        this.setState({newShow: value});
+    handleDeleteShow = showId => {
+      confirmAlert({
+        title: 'Are you sure you want to delete this draft?',
+        message: 'All data will be lost!',
+        buttons: [
+          {
+            label: 'Yes',
+            onClick: () => { 
+              this.props.deleteShowMutation({
+                variables: {
+                    id: showId
+                },
+                refetchQueries: [{ query: getShowsQuery }]
+              }).then(() => {
+                  this.setState({ selectedShow: '' });
+              });
+            }
+          },
+          {
+            label: 'Cancel',
+            onClick: () => { return; }
+          }
+        ]
+      })
+    }
+
+    handleNewShowChange = ({ target: { value } }) => {
+        this.setState({ newShow: value });
     }
 
     handleAddClick = () => {
-        this.setState({addingShow: true, selectedShow: ""});
+        this.setState({ addingShow: true, selectedShow: "" });
     }
 
     handleCancelClick = () => {
-        this.setState({newShow: null, addingShow: false});
+        this.setState({ newShow: null, addingShow: false });
     }
 
     handleSaveClick = () => {
@@ -101,7 +131,7 @@ class Show extends Component {
             }
         }).then(res => {
             const data = res.data.addShow;
-            this.setState({addingShow: false, newShowSaved: {id: data.id, name: data.name}});
+            this.setState({ addingShow: false, newShowSaved: { id: data.id, name: data.name } });
         });
     }
 
@@ -147,5 +177,6 @@ class Show extends Component {
 
 export default compose(
     graphql(getShowsQuery, { name: "getShowsQuery"}),
-    graphql(addShowMutation, { name: "addShowMutation"})
+    graphql(addShowMutation, { name: "addShowMutation"}),
+    graphql(deleteShowMutation, { name: "deleteShowMutation"}),
 )(Show);

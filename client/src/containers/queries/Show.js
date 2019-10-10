@@ -27,4 +27,14 @@ const addShowMutation = gql`
     }
 `;
 
-export { getShowsQuery, getShowQuery, addShowMutation };
+const deleteShowMutation = gql`
+    mutation($id: ID!) {
+        deleteShow(id: $id) {
+            id 
+            name 
+        }
+    }
+`;
+
+
+export { getShowsQuery, getShowQuery, addShowMutation, deleteShowMutation };
