@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
+import { Redirect } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { getShowsQuery, addShowMutation, deleteShowMutation } from './queries/Show';
 import styled from 'styled-components';
-import SelectedShow from './SelectedShow';
 import NewShowCharacters from './NewShowCharacters';
 
 const Wrapper = styled.div`
@@ -57,7 +57,8 @@ class Show extends Component {
             selectedShow: "",
             addingShow: false,
             newShow: null,
-            newShowSaved: null
+            newShowSaved: null,
+            deletedShow: false,
         }
     }
 
@@ -76,13 +77,10 @@ class Show extends Component {
         this.setState({ selectedShow: value });
     }
 
-    getSelectedShow = () => {
+    displaySelectedShow = () => {
         const { selectedShow } = this.state;
         if (selectedShow) {
-            return <SelectedShow 
-              showId={selectedShow}
-              handleDeleteShow={showId => this.handleDeleteShow(showId)}
-            />
+           return <Redirect to={{ pathname: `/show/${selectedShow}`, handleDeleteShow: this.handleDeleteShow }} />
         }
     }
 
@@ -100,7 +98,7 @@ class Show extends Component {
                 },
                 refetchQueries: [{ query: getShowsQuery }]
               }).then(() => {
-                  this.setState({ selectedShow: '' });
+                  this.setState({ selectedShow: '', deletedShow: true });
               });
             }
           },
@@ -162,21 +160,24 @@ class Show extends Component {
         )
     }
     
-
     render() {
         return (
-            <Wrapper>
-                <SelectAndAddWrapper>
-                    {this.getSelectOrAddDisplay()}
-                </SelectAndAddWrapper>
-                {this.getSelectedShow()}
-            </Wrapper>
+          <Wrapper>
+              <SelectAndAddWrapper>
+                  {this.getSelectOrAddDisplay()}
+              </SelectAndAddWrapper>
+              {this.displaySelectedShow()}
+              { this.state.deletedShow ? <Redirect to={{ pathname: '/' }} /> : null }
+              <div>
+                {this.props.children}
+              </div>
+          </Wrapper>
         );
     }
 }
 
 export default compose(
-    graphql(getShowsQuery, { name: "getShowsQuery"}),
-    graphql(addShowMutation, { name: "addShowMutation"}),
-    graphql(deleteShowMutation, { name: "deleteShowMutation"}),
+    graphql(getShowsQuery, { name: "getShowsQuery" }),
+    graphql(addShowMutation, { name: "addShowMutation" }),
+    graphql(deleteShowMutation, { name: "deleteShowMutation" }),
 )(Show);

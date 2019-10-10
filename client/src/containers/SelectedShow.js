@@ -22,10 +22,12 @@ class SelectedShow extends Component {
     }
 
     render() {
+        const { handleDeleteShow, pathname } = this.props.location;
+        const showId = pathname.split('/')[2];
         return (
             <Wrapper>
                 {this.getShowDetails()}
-                <Delete onClick={() => this.props.handleDeleteShow(this.props.showId)}>Delete Show</Delete>
+                <Delete onClick={() => handleDeleteShow(showId)}>Delete Show</Delete>
             </Wrapper>
         );
     }
@@ -33,9 +35,10 @@ class SelectedShow extends Component {
 
 export default graphql(getShowQuery, {
     options: props => {
+        const showId = props.location.pathname.split('/')[2];
         return {
             variables: {
-                id: props.showId
+                id: showId
             }
         }
     }

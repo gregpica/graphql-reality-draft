@@ -9,6 +9,7 @@
     "react-apollo": "^2.4.1",
     "react-confirm-alert": "^2.4.1",
     "react-dom": "^16.8.3",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "2.1.5",
     "styled-components": "^4.1.3"
   },
