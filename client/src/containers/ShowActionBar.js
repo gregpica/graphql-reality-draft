@@ -27,6 +27,7 @@ class ShowActionBar extends Component {
         addingShow: false,
         newShowName: null,
         newShowSaved: null,
+        invalidSaveMessage: null,
       }
   }
 
@@ -54,6 +55,11 @@ class ShowActionBar extends Component {
   )
 
   handleNewShowNameChange = ({ target: { value } }) => {
+      const { invalidSaveMessage } = this.state;
+      if (invalidSaveMessage && value) {
+        this.setState({ invalidSaveMessage: null });
+      }
+      
       this.setState({ newShowName: value });
   }
 
@@ -78,18 +84,23 @@ class ShowActionBar extends Component {
   )
 
   saveNewShow = () => {
+    const { newShowName } = this.state;
+    if (newShowName) {
       this.props.addShowMutation({
           variables: {
-              name: this.state.newShowName
+              name: newShowName
           }
       }).then(res => {
           const data = res.data.addShow;
           this.setState({ addingShow: false, newShowSaved: { id: data.id, name: data.name } });
       });
+    } else {
+      this.setState({ invalidSaveMessage: 'Hold up! Please enter a name for your new show before saving!' })
+    }
   }
 
   getSelectAddOrNewShowDisplay = () => {
-      const { addingShow, newShowSaved, selectedShow } = this.state;
+      const { addingShow, newShowSaved, selectedShow, invalidSaveMessage } = this.state;
 
       if (addingShow) {
         return (
@@ -97,6 +108,7 @@ class ShowActionBar extends Component {
             handleNewShowNameChange={this.handleNewShowNameChange}
             onSaveClick={this.saveNewShow}
             onCancelClick={this.handleCancelClick}
+            errorMessage={invalidSaveMessage}
           />
         )
       }
