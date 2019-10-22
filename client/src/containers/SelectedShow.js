@@ -5,13 +5,24 @@ import styled from 'styled-components';
 import { getShowQuery, deleteShowMutation, getShowsQuery } from '../queries/Show';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import ShowDetails from '../components/SelectedShow/ShowDetails';
 
 
 const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 50px;
 `;
 
-const Delete = styled.h5`
-  color: red;
+const DeleteButton = styled.div`
+  width: 150px;
+  height: 40px;
+  background-color: #ed7474;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
   cursor: pointer;
 `;
 
@@ -30,7 +41,8 @@ class SelectedShow extends Component {
   getShowDetails = () => {
       const { show } = this.props.getShowQuery;
       if (show) {
-        return `id: ${show.id}, name: ${show.name}`
+        const { id, name } = show;
+        return <ShowDetails id={id} name={name} />
       } else {
         return "Loading show details...."
       } 
@@ -71,7 +83,9 @@ class SelectedShow extends Component {
     return (
       <Wrapper>
         {this.getShowDetails()}
-        <Delete onClick={() => this.handleDeleteShow(showId)}>Delete Show</Delete>
+        <DeleteButton onClick={() => this.handleDeleteShow(showId)}>
+          <h5>Delete Show</h5>
+        </DeleteButton>
         {
           deletedShow ? this.clearPath() : null
         }
