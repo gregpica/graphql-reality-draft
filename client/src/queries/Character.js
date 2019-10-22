@@ -14,6 +14,7 @@ const getShowCharactersQuery = gql`
   query($showId: ID!) {
     show(id: $showId) {
       characters {
+        id
         name
       }
     }

@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
 import styled from 'styled-components';
 import AddCharacters from '../components/NewShow/AddCharacters';
-import { addCharacterMutation } from '../queries/Character';
+import CharacterList from '../components/Shared/CharacterList';
+import Character from '../components/Shared/CharacterList/Character';
+import { addCharacterMutation, getShowCharactersQuery } from '../queries/Character';
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
 `;
 
 const ShowName = styled.h2``;
@@ -39,7 +42,8 @@ class NewShow extends Component {
           variables: {
               showId: showId,
               name: characterName,
-          }
+          },
+          refetchQueries: [{ query: getShowCharactersQuery, variables: { showId } }]
         }).then(res => {
           if (invalidAddMessage) {
             this.setState({ invalidAddMessage: null });
@@ -54,10 +58,23 @@ class NewShow extends Component {
       }
     }
 
+    getShowCharacters = () => {
+      const { show } = this.props.getShowCharactersQuery;
+      if (show) {
+          return (
+            <CharacterList>
+              {
+                show.characters.map(character => <Character key={character.id} name={character.name}/>)
+              }
+            </CharacterList>
+          )
+      }
+    }
+ 
     render() {
       const { showName } = this.props.location.state;
       const { invalidAddMessage, characterName } = this.state;
-
+      console.log(this.props)
       return (
         <Wrapper>
           <ShowName>{showName}</ShowName>
@@ -68,11 +85,23 @@ class NewShow extends Component {
             nameValue={characterName}
             errorMessage={invalidAddMessage}
           />
+          {this.getShowCharacters()}
         </Wrapper>
       );
     }
 }
 
 export default compose(
-  graphql(addCharacterMutation, { name: 'addCharacterMutation' })
+  graphql(getShowCharactersQuery, { 
+    options: props => {
+      const { showId } = props.location.state;
+      return {
+        variables: {
+            showId
+        }
+      }
+    },
+    name: 'getShowCharactersQuery' 
+  }),
+  graphql(addCharacterMutation, { name: 'addCharacterMutation'}),
 )(NewShow);

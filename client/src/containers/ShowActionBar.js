@@ -59,7 +59,7 @@ class ShowActionBar extends Component {
       if (invalidSaveMessage && value) {
         this.setState({ invalidSaveMessage: null });
       }
-      
+
       this.setState({ newShowName: value });
   }
 
@@ -146,7 +146,7 @@ class ShowActionBar extends Component {
         { 
           newShowSaved ? this.redirectToNewShow(newShowSaved) : null 
         }
-        <div>
+        <div style={{ width: '100%' }}>
           {this.props.children}
         </div>
       </Wrapper>
