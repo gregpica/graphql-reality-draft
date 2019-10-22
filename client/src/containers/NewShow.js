@@ -17,35 +17,56 @@ class NewShow extends Component {
     constructor(props){
         super(props);
         this.state = {
-          characterName: null,
+          characterName: "",
+          invalidAddMessage: null,
         }
     }
 
-    handleFieldChange = ({ target: { value }}, fieldName) => this.setState({ [fieldName]: value });
+    handleNameChange = ({ target: { value }}) => {
+      this.setState({ characterName: value });
+
+      const { invalidAddMessage } = this.state;
+      if ( invalidAddMessage && value && invalidAddMessage.split(' ')[0] !== 'Error!' ) {
+        this.setState({ invalidAddMessage: null })
+      }
+    };
 
     saveCharacter = () => {
-      const { characterName } = this.state;
+      const { characterName, invalidAddMessage } = this.state;
       const { showId } = this.props.location.state;
-      this.props.addCharacterMutation({
-        variables: {
-            showId: showId,
-            name: characterName,
-        }
-      }).then(res => {
-         console.log(res.data.addCharacter);
-      });
+      if ( characterName && showId ) {
+        this.props.addCharacterMutation({
+          variables: {
+              showId: showId,
+              name: characterName,
+          }
+        }).then(res => {
+          if (invalidAddMessage) {
+            this.setState({ invalidAddMessage: null });
+          }
+          this.setState({ characterName: "" })
+          console.log(res.data.addCharacter);
+        });
+      } else {
+        const invalidAddMessage = characterName ? "Error! There is no new show associated with the character you are trying to add!" :
+        "Hold up! Please enter a name for the character you are trying to add!";
+        this.setState({ invalidAddMessage });
+      }
     }
 
     render() {
       const { showName } = this.props.location.state;
-      console.log(this.state)
+      const { invalidAddMessage, characterName } = this.state;
+
       return (
         <Wrapper>
           <ShowName>{showName}</ShowName>
           <AddCharacters
             header="Add Characters..."
             handleAddCharacter={this.saveCharacter}
-            handleFieldChange={e => this.handleFieldChange(e, 'characterName')}
+            handleNameChange={this.handleNameChange}
+            nameValue={characterName}
+            errorMessage={invalidAddMessage}
           />
         </Wrapper>
       );

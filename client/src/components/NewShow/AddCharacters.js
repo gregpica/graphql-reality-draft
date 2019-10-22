@@ -29,14 +29,26 @@ const AddButton = styled.div`
   margin-top: 50px;
 `;
 
-export default function AddCharacters({ header, handleAddCharacter, handleFieldChange }) {
+const ErrorMessage = styled.h5`
+  margin-top: 20px;
+  color: red;
+`;
+
+export default function AddCharacters({ 
+  header,
+  handleAddCharacter,
+  handleNameChange,
+  nameValue,
+  errorMessage 
+}) {
   return (
     <Wrapper>
       <Header>{header}</Header>
-      <TextBox onChange={handleFieldChange} placeholder="Name..." />
+      <TextBox value={nameValue} onChange={handleNameChange} placeholder="Name..." />
       <AddButton onClick={handleAddCharacter}>
         <h5>Add</h5>
       </AddButton>
+      <ErrorMessage>{errorMessage}</ErrorMessage>
     </Wrapper>
   );
 }
