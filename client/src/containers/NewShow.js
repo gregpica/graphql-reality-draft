@@ -5,7 +5,9 @@ import styled from 'styled-components';
 import AddCharacters from '../components/NewShow/AddCharacters';
 import CharacterList from '../components/Shared/CharacterList';
 import Character from '../components/Shared/CharacterList/Character';
-import { addCharacterMutation, getShowCharactersQuery } from '../queries/Character';
+import { addCharacterMutation } from '../queries/Character';
+import { getShowCharactersQuery } from '../queries/Show';
+
 
 const Wrapper = styled.div`
   display: flex;

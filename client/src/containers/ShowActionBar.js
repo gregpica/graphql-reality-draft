@@ -57,6 +57,7 @@ class ShowActionBar extends Component {
   displaySelectedShow = selectedShow => (
     <Redirect to={{ 
       pathname: `/show/${selectedShow}`,
+      state: { showId: selectedShow },
       clearSelectedShow: () => this.setState({ selectedShow: "" })
       }} 
     />

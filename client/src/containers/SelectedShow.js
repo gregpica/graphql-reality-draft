@@ -6,7 +6,8 @@ import { getShowQuery, deleteShowMutation, getShowsQuery } from '../queries/Show
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import ShowDetails from '../components/SelectedShow/ShowDetails';
-
+import CharacterList from '../components/Shared/CharacterList';
+import Character from '../components/Shared/CharacterList/Character';
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,8 +42,16 @@ class SelectedShow extends Component {
   getShowDetails = () => {
       const { show } = this.props.getShowQuery;
       if (show) {
-        const { id, name } = show;
-        return <ShowDetails id={id} name={name} />
+        const { id, name, characters } = show;
+        return (
+          <ShowDetails id={id} name={name}>
+            <CharacterList>
+                {
+                  characters.map(character => <Character key={character.id} name={character.name}/>)
+                }
+            </CharacterList>
+          </ShowDetails>
+        )
       } else {
         return "Loading show details...."
       } 

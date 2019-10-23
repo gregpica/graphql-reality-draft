@@ -22,17 +22,20 @@ const DetailWrapper = styled.div`
   justify-content: flex-start;
 `;
 
-export default function ShowDetails({ id, name }) {
+export default function ShowDetails({ id, name, children }) {
   return (
-    <Wrapper>
-      <DetailWrapper>
-        <Label>ID: </Label>
-        <Detail>{id}</Detail>
-      </DetailWrapper>
-      <DetailWrapper>
-        <Label>Name: </Label>
-        <Detail>{name}</Detail>
-      </DetailWrapper>
-    </Wrapper>
+    <>
+      <Wrapper>
+        <DetailWrapper>
+          <Label>ID: </Label>
+          <Detail>{id}</Detail>
+        </DetailWrapper>
+        <DetailWrapper>
+          <Label>Name: </Label>
+          <Detail>{name}</Detail>
+        </DetailWrapper>
+      </Wrapper>
+      { children }
+    </>
   );
 }
