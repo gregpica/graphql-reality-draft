@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';
+import { Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import AddCharacters from '../components/NewShow/AddCharacters';
 import CharacterList from '../components/Shared/CharacterList';
@@ -22,6 +23,7 @@ class NewShow extends Component {
         this.state = {
           characterName: "",
           invalidAddMessage: null,
+          doneAddingCharacters: false,
         }
     }
 
@@ -70,11 +72,20 @@ class NewShow extends Component {
           )
       }
     }
+
+    handleDoneAddingCharacters = () => {
+      this.props.location.allDone();
+      this.setState({ doneAddingCharacters: true });
+    };
+
+    redirectToShowsSelectedPage = showId => (
+      <Redirect to={{ pathname: `/show/${showId}` }} />
+    )
  
     render() {
-      const { showName } = this.props.location.state;
-      const { invalidAddMessage, characterName } = this.state;
-      console.log(this.props)
+      const { showName, showId } = this.props.location.state;
+      const { invalidAddMessage, characterName, doneAddingCharacters } = this.state;
+
       return (
         <Wrapper>
           <ShowName>{showName}</ShowName>
@@ -84,8 +95,10 @@ class NewShow extends Component {
             handleNameChange={this.handleNameChange}
             nameValue={characterName}
             errorMessage={invalidAddMessage}
+            handleDoneClick={this.handleDoneAddingCharacters}
           />
-          {this.getShowCharacters()}
+          {this.getShowCharacters()} 
+          { doneAddingCharacters ? this.redirectToShowsSelectedPage(showId) : null}
         </Wrapper>
       );
     }

@@ -78,8 +78,9 @@ class ShowActionBar extends Component {
   redirectToNewShow = newShowSaved => (
     <Redirect to={{ 
         pathname: '/show/new', 
-        state: { showId: newShowSaved.id, showName: newShowSaved.name 
-      }}}  
+        state: { showId: newShowSaved.id, showName: newShowSaved.name },
+        allDone: () => this.setState({ newShowSaved: null }),
+      }}  
     /> 
   )
 
@@ -89,10 +90,18 @@ class ShowActionBar extends Component {
       this.props.addShowMutation({
           variables: {
               name: newShowName
-          }
+          },
+          refetchQueries: [{ query: getShowsQuery }]
       }).then(res => {
           const data = res.data.addShow;
-          this.setState({ addingShow: false, newShowSaved: { id: data.id, name: data.name } });
+          this.setState({ 
+            addingShow: false,
+            newShowSaved: { 
+              id: data.id,
+              name: data.name
+            },
+            selectedShow: data.id 
+          });
       });
     } else {
       this.setState({ invalidSaveMessage: 'Hold up! Please enter a name for your new show before saving!' })
