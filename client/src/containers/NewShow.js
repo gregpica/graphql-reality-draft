@@ -73,10 +73,7 @@ class NewShow extends Component {
       }
     }
 
-    handleDoneAddingCharacters = () => {
-      this.props.location.allDone();
-      this.setState({ doneAddingCharacters: true });
-    };
+    handleDoneAddingCharacters = () => this.setState({ doneAddingCharacters: true });
 
     redirectToShowsSelectedPage = showId => (
       <Redirect to={{ pathname: `/show/${showId}` }} />
