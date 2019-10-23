@@ -9,12 +9,28 @@ const getShowsQuery = gql`
 }
 `;
 
+// Most encompassing query for Show in terms of data returned
 const getShowQuery = gql`
     query($id: ID!) {
         show(id: $id) {
             id 
-            name 
+            name
+            characters {
+              id
+              name
+            }
         }
+    }
+`;
+
+const getShowCharactersQuery = gql`
+    query($showId: ID!) {
+      show(id: $showId) {
+        characters {
+          id
+          name
+        }
+      }
     }
 `;
 
@@ -37,4 +53,4 @@ const deleteShowMutation = gql`
 `;
 
 
-export { getShowsQuery, getShowQuery, addShowMutation, deleteShowMutation };
+export { getShowsQuery, getShowQuery, addShowMutation, deleteShowMutation, getShowCharactersQuery };

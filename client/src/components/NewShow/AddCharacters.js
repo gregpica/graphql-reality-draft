@@ -27,16 +27,39 @@ const AddButton = styled.div`
   align-items: center;
   justify-content: center;
   margin-top: 50px;
+  cursor: pointer;
 `;
 
-export default function AddCharacters({ header, handleAddCharacter, handleFieldChange }) {
+const ErrorMessage = styled.h5`
+  margin-top: 20px;
+  color: red;
+`;
+
+const Done = styled.h5`
+  text-decoration: underline;
+  color: #59337d;
+  margin-top: 0px;
+  cursor: pointer;
+`;
+
+
+export default function AddCharacters({ 
+  header,
+  handleAddCharacter,
+  handleNameChange,
+  nameValue,
+  errorMessage,
+  handleDoneClick,
+}) {
   return (
     <Wrapper>
       <Header>{header}</Header>
-      <TextBox onChange={handleFieldChange} placeholder="Name..." />
+      <TextBox value={nameValue} onChange={handleNameChange} placeholder="Name..." />
       <AddButton onClick={handleAddCharacter}>
         <h5>Add</h5>
       </AddButton>
+      <ErrorMessage>{errorMessage}</ErrorMessage>
+      <Done onClick={handleDoneClick}>Done</Done>
     </Wrapper>
   );
 }

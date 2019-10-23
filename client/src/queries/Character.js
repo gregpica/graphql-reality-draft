@@ -10,14 +10,4 @@ const addCharacterMutation = gql`
     }
 `;
 
-const getShowCharactersQuery = gql`
-  query($showId: ID!) {
-    show(id: $showId) {
-      characters {
-        name
-      }
-    }
-  }
-`;
-
-export { addCharacterMutation, getShowCharactersQuery };
+export { addCharacterMutation };

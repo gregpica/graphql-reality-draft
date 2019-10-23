@@ -5,13 +5,25 @@ import styled from 'styled-components';
 import { getShowQuery, deleteShowMutation, getShowsQuery } from '../queries/Show';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-
+import ShowDetails from '../components/SelectedShow/ShowDetails';
+import CharacterList from '../components/Shared/CharacterList';
+import Character from '../components/Shared/CharacterList/Character';
 
 const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 50px;
 `;
 
-const Delete = styled.h5`
-  color: red;
+const DeleteButton = styled.div`
+  width: 150px;
+  height: 40px;
+  background-color: #ed7474;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
   cursor: pointer;
 `;
 
@@ -30,7 +42,16 @@ class SelectedShow extends Component {
   getShowDetails = () => {
       const { show } = this.props.getShowQuery;
       if (show) {
-        return `id: ${show.id}, name: ${show.name}`
+        const { id, name, characters } = show;
+        return (
+          <ShowDetails id={id} name={name}>
+            <CharacterList>
+                {
+                  characters.map(character => <Character key={character.id} name={character.name}/>)
+                }
+            </CharacterList>
+          </ShowDetails>
+        )
       } else {
         return "Loading show details...."
       } 
@@ -64,14 +85,15 @@ class SelectedShow extends Component {
   }
 
   render() {
-    const { pathname } = this.props.location;
     const { deletedShow } = this.state;
-    const showId = pathname.split('/')[2];
+    const { showId } = this.props.location.state;
 
     return (
       <Wrapper>
         {this.getShowDetails()}
-        <Delete onClick={() => this.handleDeleteShow(showId)}>Delete Show</Delete>
+        <DeleteButton onClick={() => this.handleDeleteShow(showId)}>
+          <h5>Delete Show</h5>
+        </DeleteButton>
         {
           deletedShow ? this.clearPath() : null
         }
@@ -83,7 +105,7 @@ class SelectedShow extends Component {
 export default compose(
   graphql(getShowQuery, {
       options: props => {
-          const showId = props.location.pathname.split('/')[2];
+        const { showId } = props.location.state;
           return {
               variables: {
                   id: showId

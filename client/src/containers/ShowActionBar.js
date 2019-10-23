@@ -31,6 +31,14 @@ class ShowActionBar extends Component {
       }
   }
 
+  componentDidMount() {
+    const { pathname } = this.props.location;
+    const depth2 = pathname.split('/')[2];
+    if (depth2 && depth2 !== 'new') {
+      this.setState({ selectedShow: depth2 });
+    }
+  }
+
   getShows = () => {
       const { shows } = this.props.getShowsQuery;
       if(shows) {
@@ -49,6 +57,7 @@ class ShowActionBar extends Component {
   displaySelectedShow = selectedShow => (
     <Redirect to={{ 
       pathname: `/show/${selectedShow}`,
+      state: { showId: selectedShow },
       clearSelectedShow: () => this.setState({ selectedShow: "" })
       }} 
     />
@@ -59,7 +68,7 @@ class ShowActionBar extends Component {
       if (invalidSaveMessage && value) {
         this.setState({ invalidSaveMessage: null });
       }
-      
+
       this.setState({ newShowName: value });
   }
 
@@ -78,8 +87,8 @@ class ShowActionBar extends Component {
   redirectToNewShow = newShowSaved => (
     <Redirect to={{ 
         pathname: '/show/new', 
-        state: { showId: newShowSaved.id, showName: newShowSaved.name 
-      }}}  
+        state: { showId: newShowSaved.id, showName: newShowSaved.name },
+      }}  
     /> 
   )
 
@@ -89,10 +98,18 @@ class ShowActionBar extends Component {
       this.props.addShowMutation({
           variables: {
               name: newShowName
-          }
+          },
+          refetchQueries: [{ query: getShowsQuery }]
       }).then(res => {
           const data = res.data.addShow;
-          this.setState({ addingShow: false, newShowSaved: { id: data.id, name: data.name } });
+          this.setState({ 
+            addingShow: false,
+            newShowSaved: { 
+              id: data.id,
+              name: data.name
+            },
+            selectedShow: data.id 
+          });
       });
     } else {
       this.setState({ invalidSaveMessage: 'Hold up! Please enter a name for your new show before saving!' })
@@ -100,7 +117,7 @@ class ShowActionBar extends Component {
   }
 
   getSelectAddOrNewShowDisplay = () => {
-      const { addingShow, newShowSaved, selectedShow, invalidSaveMessage } = this.state;
+      const { addingShow, selectedShow, invalidSaveMessage } = this.state;
 
       if (addingShow) {
         return (
@@ -115,7 +132,7 @@ class ShowActionBar extends Component {
 
       const { pathname } = this.props.location;
 
-      if (newShowSaved || pathname.split('/')[2] === 'new') {
+      if (pathname.split('/')[2] === 'new') {
         return;
       }
 
@@ -146,7 +163,7 @@ class ShowActionBar extends Component {
         { 
           newShowSaved ? this.redirectToNewShow(newShowSaved) : null 
         }
-        <div>
+        <div style={{ width: '100%' }}>
           {this.props.children}
         </div>
       </Wrapper>
