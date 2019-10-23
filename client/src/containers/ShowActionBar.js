@@ -31,6 +31,14 @@ class ShowActionBar extends Component {
       }
   }
 
+  componentDidMount() {
+    const { pathname } = this.props.location;
+    const depth2 = pathname.split('/')[2];
+    if (depth2 && depth2 !== 'new') {
+      this.setState({ selectedShow: depth2 });
+    }
+  }
+
   getShows = () => {
       const { shows } = this.props.getShowsQuery;
       if(shows) {
