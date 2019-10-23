@@ -85,9 +85,8 @@ class SelectedShow extends Component {
   }
 
   render() {
-    const { pathname } = this.props.location;
     const { deletedShow } = this.state;
-    const showId = pathname.split('/')[2];
+    const { showId } = this.props.location.state;
 
     return (
       <Wrapper>
@@ -106,7 +105,7 @@ class SelectedShow extends Component {
 export default compose(
   graphql(getShowQuery, {
       options: props => {
-          const showId = props.location.pathname.split('/')[2];
+        const { showId } = props.location.state;
           return {
               variables: {
                   id: showId
